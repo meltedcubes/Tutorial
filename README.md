@@ -7,6 +7,9 @@ Hyperion hooks `NtCreateSection` and blocks anything with `SEC_IMAGE`. That's a 
 ## The Trick
 
 But here's the thing - Before Windows goes through the trouble of creating a new section for a DLL, it first checks if that DLL is *already* loaded. It looks through `PEB->Ldr->InLoadOrderModuleList`, and if it finds a match, it just reuses that entry and **completely skips calling `NtCreateSection`**.
+
+Internally, LoadLibraryA or any other variant, just calls "LoadLibraryStub" (a forwarder), which then calls LdrLoadDll, which calls LdrpLoadDll, which then calls LdrpLoadDllInternal, which then checks if the image is already loaded using LdrpFastpthReloadedDll -> LdrpFindLoadedDllByName to search PEB->Ldr->InLoadOrderModuleList, and if found (like our fake version.dll entry), it increments the load count, builds forwarder links, and returns STATUS_SUCCESS causing LdrpLoadDllInternal to skip LdrpMapDll entirely, meaning NtCreateSection(SEC_IMAGE) never gets called, which completely bypasses Hyperion's hook that's waiting to block exactly that call!
+
 <img width="950" height="783" alt="image" src="https://github.com/user-attachments/assets/14e585b2-a08c-48a4-bb48-0afb4c1b3383" />
 
 So our little hack works like this:
