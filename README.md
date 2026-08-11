@@ -8,7 +8,7 @@ Hyperion hooks `NtCreateSection` and blocks anything with `SEC_IMAGE`. That's a 
 
 Internally,  `LoadLibraryA` or any other variant, just calls `LoadLibraryStub` (a forwarder), which then calls `LdrLoadDll`, which calls `LdrpLoadDll`, which then calls `LdrpLoadDllInternal`, which then checks if the image is already loaded using `LdrpFastpthReloadedDll` -> `LdrpFindLoadedDllByName` to search PEB->Ldr->InLoadOrderModuleList, and if found (like our fake version.dll entry).
 
-It increments the load count, builds forwarder links, and returns STATUS_SUCCESS causing LdrpLoadDllInternal to skip LdrpMapDll entirely, meaning NtCreateSection(SEC_IMAGE) never gets called, which completely bypasses Hyperion's hook that's waiting to block exactly that call!
+It increments the load count, builds forwarder links, and returns `STATUS_SUCCESS` causing `LdrpLoadDllInternal` to skip `LdrpMapDll` entirely, meaning `NtCreateSection(SEC_IMAGE)` never gets called, which completely bypasses Hyperion's hook that's waiting to block exactly that call!
 
 <img width="950" height="783" alt="image" src="https://github.com/user-attachments/assets/14e585b2-a08c-48a4-bb48-0afb4c1b3383" />
 
