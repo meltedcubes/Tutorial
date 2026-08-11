@@ -1,3 +1,5 @@
+## Bypassing hyperion's NtCreateSection hook and loadlibary block
+
 ## The Problem
 
 Hyperion hooks `NtCreateSection` and blocks anything with `SEC_IMAGE`. That's a problem because `LoadLibrary` uses `SEC_IMAGE` to load DLLs. 
