@@ -1,4 +1,4 @@
-## Bypassing hyperion's NtCreateSection hook and loadlibary block
+## Bypassing Hyperion's NtCreateSection hook and loadlibary block
 
 ## The Problem
 
